@@ -15,6 +15,7 @@ const SpotifyView = ({
   handleMusicChange,
   choosenSong,
   timeIListenThisSong,
+  totalTimeIListenMusic,
 }) => {
   let i = 0;
   const artistsSelect = fetchUniqueArtist.map((a) => (
@@ -25,9 +26,9 @@ const SpotifyView = ({
 
   const convert = (num) => {
     let hours = 0;
+    let day = 0;
     const numb = num / 60000;
     let int = Math.round(numb);
-    console.log(int);
     if (int > 59) {
       hours = Math.floor(int / 60);
       int = int % 60;
@@ -35,13 +36,17 @@ const SpotifyView = ({
         int = `0${int}`;
       }
     }
+
     let decimal = numb - Math.floor(numb);
     let second = Math.round(decimal * 60);
     if (second < 10) {
       second = `0${second}`;
     }
-
-    return `${hours}h${int}m${second}s`;
+    if (hours > 23) {
+      day = Math.floor(hours / 24);
+      hours = hours % 24;
+      return `${day}d${hours}h${int}m${second}s`;
+    } else return `${hours}h${int}m${second}s`;
   };
 
   const musicFromArtist = title.map((m) => (
@@ -53,6 +58,17 @@ const SpotifyView = ({
   return (
     <div className={styles.spotifyApp}>
       <h1 className={styles.title}> Spotify App'</h1>
+      <h2 className={styles.title}>
+        {" "}
+        J'ai quand même écouté{" "}
+        {
+          <span className={styles.resultDetails}>
+            {convert(totalTimeIListenMusic)}
+          </span>
+        }{" "}
+        de musique cette année ...
+      </h2>
+      <p className={styles.taunt}> J'ai vraiment que ça à faire... </p>
       <div className={styles.selectInput}>
         <FormControl className={styles.input}>
           <InputLabel>Artist</InputLabel>
@@ -98,9 +114,9 @@ const SpotifyView = ({
           )}
         </div>
       )}
-      {timeIListenThisSong && (
+      {timeIListenThisSong > 0 && (
         <p className={styles.result}>
-          Clem' a écouté{" "}
+          J'ai écouté{" "}
           {<span className={styles.resultDetails}>{choosenSong}</span>} de{" "}
           {<span className={styles.resultDetails}>{choosenArtist}</span>}{" "}
           pendant{" "}
@@ -110,6 +126,11 @@ const SpotifyView = ({
             </span>
           }{" "}
           sur l'année 2021.
+        </p>
+      )}
+      {timeIListenThisSong === 0 && (
+        <p className={styles.result}>
+          What the hell spotify? I never listened that song the past year...
         </p>
       )}
     </div>

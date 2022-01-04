@@ -9,18 +9,24 @@ const SpotifyContainer = () => {
   const [title, setTitle] = useState([]);
   const [choosenSong, setChoosenSong] = useState("");
   const [timeIListenThisSong, setTimeIListenThisSong] = useState(null);
+  const [totalTimeIListenMusic, setTotalTimeIListenMusic] = useState(null);
 
   useEffect(() => {
     fetchArtists();
+    fetchTotalTime();
   }, []);
 
   const fetchArtists = () => {
     DATA.map((a) => setArtists((artists) => [...artists, a.artistName]));
   };
+  const fetchTotalTime = () => {
+    const totalTime = DATA.map((t) => t.msPlayed);
+    setTotalTimeIListenMusic(totalTime.reduce((f, s) => f + s));
+  };
 
   const fetchUniqueArtist = artists
-    .sort()
     .filter((e, i) => artists.indexOf(e) === i)
+    .map((a) => a.charAt(0).toUpperCase() + a.slice(1))
     .sort();
 
   const handleArtistChange = (e) => {
@@ -41,7 +47,6 @@ const SpotifyContainer = () => {
     const songMs = DATA.filter((el) => el.trackName === song).map(
       (t) => t.msPlayed
     );
-    console.log(songMs);
 
     const totalMs = songMs.reduce((f, s) => f + s);
     setTimeIListenThisSong(totalMs);
@@ -54,6 +59,7 @@ const SpotifyContainer = () => {
 
   return (
     <SpotifyView
+      totalTimeIListenMusic={totalTimeIListenMusic}
       timeIListenThisSong={timeIListenThisSong}
       title={title}
       fetchUniqueArtist={fetchUniqueArtist}
